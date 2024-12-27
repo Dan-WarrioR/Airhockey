@@ -1,10 +1,13 @@
 ﻿using SFML.Graphics;
+using SFML.System;
 
-namespace Source.Characters
+namespace Source.Objects
 {
 	public class GameObject : Drawable
 	{
 		public FloatRect ObjectRect => Shape.GetGlobalBounds();
+
+		public Vector2f Position => Shape.Position;
 
 		public Shape Shape { get; }
 

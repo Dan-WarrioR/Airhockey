@@ -2,7 +2,7 @@
 using SFML.System;
 using SFML.Window;
 
-namespace Source.Characters
+namespace Source.Objects
 {
 	public struct MovementKey
 	{
@@ -27,27 +27,29 @@ namespace Source.Characters
 	public class Player : GameObject
 	{
 		private const float _speed = 0.5f;
-		private const float PuckRadius = 20f;
+
+		public float Radius { get; }
 
 		public int Score { get; set; } = 0;
 
 		private InputType _inputType;
-
 		private Vector2f _mapSize;
 
 		private List<MovementKey> _keyMap = new(4);
 
 		private bool _isLeftSide = false;
 
-		public Player(InputType inputType, Vector2f startPosition, Vector2f mapSize) : base(new CircleShape(PuckRadius))
+		public Player(InputType inputType, float radius, Vector2f startPosition, Vector2f mapSize) : base(new CircleShape(radius))
 		{
 			_inputType = inputType;
+			Radius = radius;
+
 			_mapSize = mapSize;
 			_isLeftSide = startPosition.X < mapSize.X / 2;
 
 			Shape.Position = startPosition;
 			Shape.FillColor = inputType == InputType.WASD ? Color.Blue : Color.Red;
-			Shape.Origin = new(PuckRadius, PuckRadius);
+			Shape.Origin = new(Radius, Radius);
 			
 			_keyMap = _inputType switch
 			{
@@ -80,11 +82,11 @@ namespace Source.Characters
 		private void ClampPosition()
 		{
 			float centerX = _mapSize.X / 2;
-			float minX = _isLeftSide ? PuckRadius : centerX + PuckRadius;
-			float maxX = _isLeftSide ? centerX - PuckRadius : _mapSize.X - PuckRadius;
+			float minX = _isLeftSide ? Radius : centerX + Radius;
+			float maxX = _isLeftSide ? centerX - Radius : _mapSize.X - Radius;
 
 			float x = Math.Clamp(Shape.Position.X, minX, maxX);
-			float y = Math.Clamp(Shape.Position.Y, PuckRadius, _mapSize.Y - PuckRadius);
+			float y = Math.Clamp(Shape.Position.Y, Radius, _mapSize.Y - Radius);
 			Shape.Position = new(x, y);
 		}
 
