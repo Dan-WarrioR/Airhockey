@@ -1,7 +1,7 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using Source.Characters;
+using Source.Objects;
 using Source.Map;
 
 namespace Source.Core
@@ -9,6 +9,7 @@ namespace Source.Core
     public class Game
     {
         private static readonly Vector2f WindowSize = new(1000, 500);
+        private const float PlayerRadius = 30f;
 
         private RenderWindow _window;
         
@@ -22,11 +23,14 @@ namespace Source.Core
         public Game()
         {
             InitializeWindow();
-            
-            _field = new((int)WindowSize.X, (int)WindowSize.Y, 3f, WindowSize.Y / 3f);
-            _player1 = new(InputType.WASD, new(100, WindowSize.Y / 2f), WindowSize);
-            _player2 = new(InputType.Arrows, new(WindowSize.X - 100, WindowSize.Y / 2f), WindowSize);
-            _puck = new(new Vector2f(WindowSize.X / 2, WindowSize.Y / 2));
+
+            float borderWidth = 3f;
+            float halfHeight = WindowSize.Y / 2f;
+
+			_field = new(WindowSize.X, WindowSize.Y, borderWidth, WindowSize.Y / 3f);
+            _player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), WindowSize);
+            _player2 = new(InputType.Arrows, PlayerRadius, new(WindowSize.X - 100, halfHeight), WindowSize);
+            _puck = new(15f, new (WindowSize.X / 2, halfHeight));
         }
         
         private void InitializeWindow()
@@ -66,13 +70,55 @@ namespace Source.Core
                 UpdateScore(goalSide);
 			}
 
-            CheckCollisions();
+            CheckPuckWallCollisions();
+
+            CheckPuckWithPlayerCollisions();
 		}
 
-        private void CheckCollisions()
+        private void CheckPuckWallCollisions()
         {
+			if (_puck.Position.X - _puck.Radius <= 0 || _puck.Position.X + _puck.Radius >= _field.Width)
+			{
+				_puck.ChangeVelocity(new(-_puck.Velocity.X, _puck.Velocity.Y));
+			}
 
-        }
+			if (_puck.Position.Y - _puck.Radius <= 0 || _puck.Position.Y + _puck.Radius >= _field.Height)
+			{
+				_puck.ChangeVelocity(new(_puck.Velocity.X, -_puck.Velocity.Y));
+			}
+		}
+
+        private void CheckPuckWithPlayerCollisions()
+        {
+            if (_puck.CollideWith(_player1))
+            {
+				ChangePuckVelocity(_player1);
+			}
+			else if (_puck.CollideWith(_player2))
+			{
+				ChangePuckVelocity(_player2);
+			}
+		}
+
+        private void ChangePuckVelocity(Player player)
+        {
+			Vector2f direction = _puck.Position - player.Position;
+
+			float magnitude = MathF.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
+
+			if (magnitude == 0)
+            {
+                return;
+            }
+
+			direction /= magnitude;
+
+			float speed = MathF.Sqrt(_puck.Velocity.X * _puck.Velocity.X + _puck.Velocity.Y * _puck.Velocity.Y);
+
+			Vector2f newVelocity = direction * speed;
+
+			_puck.ChangeVelocity(newVelocity);
+		}
 
         private void UpdateScore(GoalSide goalSide)
         {
@@ -84,7 +130,8 @@ namespace Source.Core
 
         private void ProcessGameEnd()
         {
-            Console.WriteLine($"Player 1 - {_player1.Score}" +
+            Console.WriteLine($"\n===Stats===" +
+                $"Player 1 - {_player1.Score}" +
                 $"\nPlayer 2 - {_player2.Score}");
         }
         
@@ -99,7 +146,7 @@ namespace Source.Core
         
         private void Draw()
         {
-            _window.Clear(Color.Black);
+            _window.Clear(Color.White);
 
             _field.Draw(_window);
             
