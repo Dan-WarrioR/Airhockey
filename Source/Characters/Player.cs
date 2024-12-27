@@ -1,87 +1,108 @@
 ﻿using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
-using Source.Core;
 
 namespace Source.Characters
 {
-    public enum InputType
-    {
-        Arrows,
-        WASD,
-    }
-    
-    public class Player
-    {
-        private const float PuckRadius = 20f;
+	public struct MovementKey
+	{
+		public Keyboard.Key Key { get; }
+		public float DeltaX { get; }
+		public float DeltaY { get; }
 
-        private Vector2u _windowSize;
-        
-        public int Score { get; set; } = 0;
+		public MovementKey(Keyboard.Key key, float deltaX, float deltaY)
+		{
+			Key = key;
+			DeltaX = deltaX;
+			DeltaY = deltaY;
+		}
+	}
 
-        public CircleShape Paddle { get; private set; }
+	public enum InputType
+	{
+		Arrows,
+		WASD,
+	}
 
-        private InputType _inputType;
+	public class Player : GameObject
+	{
+		private const float _speed = 0.5f;
+		private const float PuckRadius = 20f;
 
-        private Vector2f _delta;
-        
-        public Player(InputType inputType, Vector2f startPosition, RenderWindow window)
-        {
-            _inputType = inputType;
-            _windowSize = window.Size;
-            
-            Paddle = new(PuckRadius)
-            {
-                Position = startPosition,
-                FillColor = inputType == InputType.WASD ? Color.Blue : Color.Red
-            };
+		public int Score { get; set; } = 0;
 
-            window.KeyPressed += OnMoveKeyPressed;
-        }
+		private InputType _inputType;
 
-        public void HandleInput()
-        {
-            Paddle.Position += _delta * 5f; // Швидкість
-            ClampPosition();
-        }
-        
-        public void Draw(RenderWindow window)
-        {
-            window.Draw(Paddle);
-        }
-        
-        private void ClampPosition()
-        {
-            float radius = Paddle.Radius;
-            float x = Math.Clamp(Paddle.Position.X, radius, _windowSize.X - radius);
-            float y = Math.Clamp(Paddle.Position.Y, radius, _windowSize.Y - radius);
-            Paddle.Position = new Vector2f(x, y);
-        }
-        
-        private void OnMoveKeyPressed(object? sender, KeyEventArgs e)
-        {
-            _delta = _inputType switch
-            {
-                InputType.Arrows => e.Code switch
-                {
-                    Keyboard.Key.Up => new Vector2f(0, -1),
-                    Keyboard.Key.Down => new Vector2f(0, 1),
-                    Keyboard.Key.Left => new Vector2f(-1, 0),
-                    Keyboard.Key.Right => new Vector2f(1, 0),
-                    _ => new Vector2f(0, 0),
-                },
-                
-                InputType.WASD => e.Code switch
-                {
-                    Keyboard.Key.W => new Vector2f(0, -1),
-                    Keyboard.Key.S => new Vector2f(0, 1),
-                    Keyboard.Key.A => new Vector2f(-1, 0),
-                    Keyboard.Key.D => new Vector2f(1, 0),
-                    _ => new Vector2f(0, 0),
-                },
-            };
+		private Vector2f _mapSize;
 
-            HandleInput();
-        } 
-    }
+		private List<MovementKey> _keyMap = new(4);
+
+		private bool _isLeftSide = false;
+
+		public Player(InputType inputType, Vector2f startPosition, Vector2f mapSize) : base(new CircleShape(PuckRadius))
+		{
+			_inputType = inputType;
+			_mapSize = mapSize;
+			_isLeftSide = startPosition.X < mapSize.X / 2;
+
+			Shape.Position = startPosition;
+			Shape.FillColor = inputType == InputType.WASD ? Color.Blue : Color.Red;
+			Shape.Origin = new(PuckRadius, PuckRadius);
+			
+			_keyMap = _inputType switch
+			{
+				InputType.WASD => new()
+				{
+					new(Keyboard.Key.W, 0, -1),
+					new(Keyboard.Key.S, 0, 1),
+					new(Keyboard.Key.A, -1, 0),
+					new(Keyboard.Key.D, 1, 0),
+				},
+				InputType.Arrows => new()
+				{
+					new(Keyboard.Key.Up, 0, -1),
+					new(Keyboard.Key.Down, 0, 1),
+					new(Keyboard.Key.Left, -1, 0),
+					new(Keyboard.Key.Right, 1, 0),
+				},
+			};
+		}
+
+		public override void Update()
+		{
+			var delta = GetDelta();
+
+			Shape.Position += delta * _speed;
+
+			ClampPosition();
+		}
+
+		private void ClampPosition()
+		{
+			float centerX = _mapSize.X / 2;
+			float minX = _isLeftSide ? PuckRadius : centerX + PuckRadius;
+			float maxX = _isLeftSide ? centerX - PuckRadius : _mapSize.X - PuckRadius;
+
+			float x = Math.Clamp(Shape.Position.X, minX, maxX);
+			float y = Math.Clamp(Shape.Position.Y, PuckRadius, _mapSize.Y - PuckRadius);
+			Shape.Position = new(x, y);
+		}
+
+		private Vector2f GetDelta()
+		{
+			float deltaX = 0;
+			float deltaY = 0;
+
+			foreach (var key in _keyMap)
+			{
+				if (Keyboard.IsKeyPressed(key.Key))
+				{
+					deltaX += key.DeltaX;
+					deltaY += key.DeltaY;
+				}
+			}
+
+			return new(deltaX, deltaY);
+		}
+	}
 }
