@@ -1,63 +1,120 @@
 ﻿using SFML.Graphics;
 using SFML.System;
+using Source.Characters;
 using Color = SFML.Graphics.Color;
 
 namespace Source.Map
 {
+	public enum GoalSide
+	{
+		Left,
+		Right,
+	}
+
     public class Field
     {
-        private static readonly Color BorderColor = Color.Red;
+		private static readonly Color BorderColor = Color.Red;
 
         public int Width { get; }
         public int Height { get; }
         
-        private List<RectangleShape> _rectangles;
+        private List<GameObject> _objects;
 
-        public Field(int width, int height, float borderWidth, float goalHeight)
+        private GameObject _leftGate;
+        private GameObject _rightGate;
+
+        public Field(int width, int height, float borderWidth, float gateHeight)
         {
             Width = width;
             Height = height;
 
-            _rectangles = new();
-            
-            float widthDelta = Width - borderWidth;
-            float heightDelta = Height - goalHeight;
-            
-            _rectangles.Add(new(new Vector2f(Width, borderWidth)));
-            _rectangles.Add(new(new Vector2f(borderWidth, heightDelta / 2)));
-            _rectangles.Add(new(new Vector2f(Width, borderWidth))
-            {
-                Position = new(0, Height - borderWidth),
-            });
-            _rectangles.Add(new(new Vector2f(borderWidth, heightDelta / 2))
-            {
-                Position = new (0, Height - heightDelta / 2),
-            });
-            _rectangles.Add(new (new Vector2f(borderWidth, heightDelta / 2))
-            {
-                Position = new (widthDelta, 0),
-            });
-            _rectangles.Add(new(new Vector2f(borderWidth, heightDelta / 2))
-            {
-                Position = new(widthDelta, Height - heightDelta / 2),
-            });
-            _rectangles.Add(new(new Vector2f(borderWidth, Height))
-            {
-                Position = new(Width / 2f, 0),
-            });
+            _objects = new();
 
-            foreach (var rectangle in _rectangles)
-            {
-                rectangle.FillColor = BorderColor;
-            }
-        }
+			float widthDelta = Width - borderWidth;
+			float heightDelta = Height - gateHeight;
+
+			PlaceBorders(widthDelta, borderWidth, gateHeight);
+
+			PlacePlayerGates(widthDelta, heightDelta, borderWidth, gateHeight);
+		}
         
         public void Draw(RenderWindow window)
         {
-            foreach (var shape in _rectangles)
+            foreach (var gameObject in _objects)
             {
-                window.Draw(shape); 
+                window.Draw(gameObject); 
             }
-        }
-    }
+		}
+
+		public bool IsInGoal(Puck puck, out GoalSide goalSide)
+		{
+			if (_leftGate.CollideWith(puck))
+			{
+				goalSide = GoalSide.Left;
+
+				return true;
+			}
+
+			if (_leftGate.CollideWith(puck))
+			{
+				goalSide = GoalSide.Right;
+
+				return true;
+			}
+
+			goalSide = default;
+
+			return false;
+		}
+
+        private void PlaceBorders(float widthDelta, float borderWidth, float gateHeight)
+        {	
+			Vector2f horizontalLineSize = new(Width, borderWidth);
+			Vector2f vecrticalLineSize = new(borderWidth, Height);
+
+			//Horizontal borders
+			_objects.Add(new(new RectangleShape(horizontalLineSize)));
+			_objects.Add(new(new RectangleShape(horizontalLineSize)
+			{
+				Position = new(0, Height - borderWidth),
+			}));
+
+			//Vertical borders
+			_objects.Add(new(new RectangleShape(vecrticalLineSize)));
+			_objects.Add(new(new RectangleShape(vecrticalLineSize)
+			{
+				Position = new(widthDelta, 0),
+			}));
+
+			//Center line
+			//_objects.Add(new(new RectangleShape(vecrticalLineSize)
+			//{
+			//	Position = new(Width / 2f, 0),
+			//}));
+
+			foreach (var rectangle in _objects)
+			{
+				rectangle.Shape.FillColor = BorderColor;
+			}
+		}
+
+		private void PlacePlayerGates(float widthDelta, float heightDelta, float borderWidth, float gateHeight)
+		{
+			var gateSize = new Vector2f(borderWidth, heightDelta / 2);
+
+			_leftGate = new(new RectangleShape(gateSize)
+			{
+				Position = new(0, heightDelta / 2),
+				FillColor = Color.White,
+			});
+			_rightGate = new(new RectangleShape(gateSize)
+			{
+				Position = new(widthDelta, heightDelta / 2),
+				FillColor = Color.White,
+			});
+
+			_objects.Add(_leftGate);
+			_objects.Add(_rightGate);
+		}
+	}
 }
