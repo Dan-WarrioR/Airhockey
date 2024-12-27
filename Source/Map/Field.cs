@@ -1,6 +1,6 @@
 ﻿using SFML.Graphics;
 using SFML.System;
-using Source.Characters;
+using Source.Objects;
 using Color = SFML.Graphics.Color;
 
 namespace Source.Map
@@ -13,17 +13,18 @@ namespace Source.Map
 
     public class Field
     {
-		private static readonly Color BorderColor = Color.Red;
+		private static readonly Color BorderColor = Color.Black;
+		private static readonly Color GateColor = Color.Blue;
 
-        public int Width { get; }
-        public int Height { get; }
+        public float Width { get; }
+        public float Height { get; }
         
         private List<GameObject> _objects;
 
         private GameObject _leftGate;
         private GameObject _rightGate;
 
-        public Field(int width, int height, float borderWidth, float gateHeight)
+        public Field(float width, float height, float borderWidth, float gateHeight)
         {
             Width = width;
             Height = height;
@@ -55,7 +56,7 @@ namespace Source.Map
 				return true;
 			}
 
-			if (_leftGate.CollideWith(puck))
+			if (_rightGate.CollideWith(puck))
 			{
 				goalSide = GoalSide.Right;
 
@@ -87,10 +88,10 @@ namespace Source.Map
 			}));
 
 			//Center line
-			//_objects.Add(new(new RectangleShape(vecrticalLineSize)
-			//{
-			//	Position = new(Width / 2f, 0),
-			//}));
+			_objects.Add(new(new RectangleShape(vecrticalLineSize)
+			{
+				Position = new(Width / 2f, 0),
+			}));
 
 			foreach (var rectangle in _objects)
 			{
@@ -105,12 +106,12 @@ namespace Source.Map
 			_leftGate = new(new RectangleShape(gateSize)
 			{
 				Position = new(0, heightDelta / 2),
-				FillColor = Color.White,
+				FillColor = GateColor,
 			});
 			_rightGate = new(new RectangleShape(gateSize)
 			{
 				Position = new(widthDelta, heightDelta / 2),
-				FillColor = Color.White,
+				FillColor = GateColor,
 			});
 
 			_objects.Add(_leftGate);
