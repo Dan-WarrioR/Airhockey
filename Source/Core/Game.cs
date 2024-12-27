@@ -131,7 +131,7 @@ namespace Source.Core
         private void ProcessGameEnd()
         {
             Console.WriteLine($"\n===Stats===" +
-                $"Player 1 - {_player1.Score}" +
+                $"\nPlayer 1 - {_player1.Score}" +
                 $"\nPlayer 2 - {_player2.Score}");
         }
         
