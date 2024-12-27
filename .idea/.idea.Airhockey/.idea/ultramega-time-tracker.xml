@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="UltramegaTimeTracker">
+    <option name="idleTime" value="6" />
+    <option name="totalRunTime" value="47204" />
+    <option name="totalDebugTime" value="36795" />
+    <option name="todayTime" value="1191" />
+    <option name="todayDateTime" value="1735254000000" />
+    <option name="classTimeData">
+      <map>
+        <entry key="2024-12-27 12">
+          <value>
+            <map>
+              <entry key="Game.cs" value="101" />
+              <entry key="Player.cs" value="1084" />
+            </map>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
