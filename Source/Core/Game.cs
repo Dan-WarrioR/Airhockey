@@ -19,8 +19,10 @@ namespace Source.Core
         private Puck _puck;
 
         private Field _field;
-        
-        public Game()
+
+		private Text _scoreText;
+
+		public Game()
         {
             InitializeWindow();
 
@@ -31,7 +33,14 @@ namespace Source.Core
             _player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), WindowSize);
             _player2 = new(InputType.Arrows, PlayerRadius, new(WindowSize.X - 100, halfHeight), WindowSize);
             _puck = new(15f, new (WindowSize.X / 2, halfHeight));
-        }
+
+			var font = new Font("impact.ttf");
+			_scoreText = new($"{_player1.Score} | {_player2.Score}", font, 24)
+			{
+				FillColor = Color.Black,
+				Position = new Vector2f(10, 10),
+			};
+		}
         
         private void InitializeWindow()
         {
@@ -50,8 +59,6 @@ namespace Source.Core
                 ProcessLogic();
                 Draw();
             }
-
-            ProcessGameEnd();
         }
 
         private void CalculateInput()
@@ -125,14 +132,9 @@ namespace Source.Core
             Player player = goalSide == GoalSide.Right ? _player1 : _player2;
             player.Score++;
 
-			_puck.Reset();
-        }
+            _scoreText.DisplayedString = $"{_player1.Score} | {_player2.Score}";
 
-        private void ProcessGameEnd()
-        {
-            Console.WriteLine($"\n===Stats===" +
-                $"\nPlayer 1 - {_player1.Score}" +
-                $"\nPlayer 2 - {_player2.Score}");
+			_puck.Reset();
         }
         
 
@@ -153,6 +155,8 @@ namespace Source.Core
             _window.Draw(_player1);
             _window.Draw(_player2);
             _window.Draw(_puck);
+
+            _window.Draw(_scoreText);
 
 			_window.Display(); 
         }
