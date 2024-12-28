@@ -26,20 +26,9 @@ namespace Source.Core
         {
             InitializeWindow();
 
-            float borderWidth = 3f;
-            float halfHeight = WindowSize.Y / 2f;
+            InitializeObjects();
 
-			_field = new(WindowSize.X, WindowSize.Y, borderWidth, WindowSize.Y / 3f);
-            _player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), WindowSize);
-            _player2 = new(InputType.Arrows, PlayerRadius, new(WindowSize.X - 100, halfHeight), WindowSize);
-            _puck = new(15f, new (WindowSize.X / 2, halfHeight));
-
-			var font = new Font("impact.ttf");
-			_scoreText = new($"{_player1.Score} | {_player2.Score}", font, 24)
-			{
-				FillColor = Color.Black,
-				Position = new Vector2f(10, 10),
-			};
+			LoadScoreText();
 		}
         
         private void InitializeWindow()
@@ -48,8 +37,29 @@ namespace Source.Core
             _window = new(videoMode, "Air Hockey");
             _window.Closed += (_, _) => _window.Close();
         }
-        
-        public void StartGame()
+
+        private void InitializeObjects()
+        {
+			float borderWidth = 3f;
+			float halfHeight = WindowSize.Y / 2f;
+
+			_field = new(WindowSize.X, WindowSize.Y, borderWidth, WindowSize.Y / 3f);
+			_player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), WindowSize);
+			_player2 = new(InputType.Arrows, PlayerRadius, new(WindowSize.X - 100, halfHeight), WindowSize);
+			_puck = new(15f, new(WindowSize.X / 2, halfHeight));
+		}
+
+		private void LoadScoreText()
+		{
+			var font = new Font(@"C:\Windows\Fonts\Arial.ttf");
+			_scoreText = new($"{_player1.Score} | {_player2.Score}", font, 24)
+			{
+				FillColor = Color.Black,
+				Position = new Vector2f(10, 10),
+			};
+		}
+
+		public void StartGame()
         {
             Draw();
 

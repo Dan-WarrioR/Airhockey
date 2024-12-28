@@ -8,6 +8,7 @@ namespace Source.Objects
 		private static readonly Color PuckColor = Color.Black;
 
 		private const float Speed = 1.5f;
+
 		public float Radius { get; }
 
 		public Vector2f Velocity { get; private set; }
