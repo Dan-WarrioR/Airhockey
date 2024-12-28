@@ -158,7 +158,7 @@ namespace Source.Core
         
         private void Draw()
         {
-            _window.Clear(Color.White);
+            _window.Clear(Color.Black);
 
             _field.Draw(_window);
             

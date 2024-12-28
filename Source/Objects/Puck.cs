@@ -5,9 +5,9 @@ namespace Source.Objects
 {
     public class Puck : GameObject
     {
-		private static readonly Color PuckColor = Color.Black;
+		private static readonly Color PuckColor = Color.White;
 
-		private const float Speed = 1.5f;
+		private const float Speed = 0.5f;
 
 		public float Radius { get; }
 

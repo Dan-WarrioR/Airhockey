@@ -48,7 +48,7 @@ namespace Source.Objects
 			_isLeftSide = startPosition.X < mapSize.X / 2;
 
 			Shape.Position = startPosition;
-			Shape.FillColor = inputType == InputType.WASD ? Color.Blue : Color.Red;
+			Shape.FillColor = Color.White;
 			Shape.Origin = new(Radius, Radius);
 			
 			_keyMap = _inputType switch

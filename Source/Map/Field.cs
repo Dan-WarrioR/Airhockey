@@ -13,7 +13,7 @@ namespace Source.Map
 
     public class Field
     {
-		private static readonly Color BorderColor = Color.Black;
+		private static readonly Color BorderColor = Color.White;
 		private static readonly Color GateColor = Color.Blue;
 
         public float Width { get; }
@@ -88,10 +88,10 @@ namespace Source.Map
 			}));
 
 			//Center line
-			_objects.Add(new(new RectangleShape(vecrticalLineSize)
-			{
-				Position = new(Width / 2f, 0),
-			}));
+			//_objects.Add(new(new RectangleShape(vecrticalLineSize)
+			//{
+			//	Position = new(Width / 2f, 0),
+			//}));
 
 			foreach (var rectangle in _objects)
 			{
