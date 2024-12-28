@@ -27,7 +27,7 @@ namespace Source.Objects
 			GenerateVelocity();
 		}
 
-		public override void Update()
+		public void Move()
 		{
 			Shape.Position += Velocity;
 		}

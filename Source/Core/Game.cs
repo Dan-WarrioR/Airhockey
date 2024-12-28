@@ -10,6 +10,7 @@ namespace Source.Core
     {
         private static readonly Vector2f WindowSize = new(1000, 500);
         private const float PlayerRadius = 30f;
+        private static readonly Color TextColor = Color.White;
 
         private RenderWindow _window;
         
@@ -54,8 +55,8 @@ namespace Source.Core
 			var font = new Font(@"C:\Windows\Fonts\Arial.ttf");
 			_scoreText = new($"{_player1.Score} | {_player2.Score}", font, 24)
 			{
-				FillColor = Color.Black,
-				Position = new Vector2f(10, 10),
+				FillColor = TextColor,
+				Position = new(10, 10),
 			};
 		}
 
@@ -75,13 +76,16 @@ namespace Source.Core
         {
             _window.DispatchEvents();
             
-            _player1.Update();
-            _player2.Update();
-			_puck.Update();
+            _player1.HandleInput();
+            _player2.HandleInput();
 		}
 
         private void ProcessLogic()
         {
+            _player1.Move();
+            _player2.Move();
+            _puck.Move();
+
             if (_field.IsInGoal(_puck, out GoalSide goalSide))
             {
                 UpdateScore(goalSide);

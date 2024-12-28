@@ -14,7 +14,7 @@ namespace Source.Map
     public class Field
     {
 		private static readonly Color BorderColor = Color.White;
-		private static readonly Color GateColor = Color.Blue;
+		private static readonly Color GateColor = Color.Black;
 
         public float Width { get; }
         public float Height { get; }

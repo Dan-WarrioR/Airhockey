@@ -32,6 +32,8 @@ namespace Source.Objects
 
 		public int Score { get; set; } = 0;
 
+		private Vector2f _delta;
+
 		private InputType _inputType;
 		private Vector2f _mapSize;
 
@@ -70,11 +72,14 @@ namespace Source.Objects
 			};
 		}
 
-		public override void Update()
+		public void HandleInput()
 		{
-			var delta = GetDelta();
+			_delta = GetDelta();	
+		}
 
-			Shape.Position += delta * _speed;
+		public void Move()
+		{
+			Shape.Position += _delta * _speed;
 
 			ClampPosition();
 		}
@@ -88,7 +93,7 @@ namespace Source.Objects
 			float x = Math.Clamp(Shape.Position.X, minX, maxX);
 			float y = Math.Clamp(Shape.Position.Y, Radius, _mapSize.Y - Radius);
 			Shape.Position = new(x, y);
-		}
+		}	
 
 		private Vector2f GetDelta()
 		{
