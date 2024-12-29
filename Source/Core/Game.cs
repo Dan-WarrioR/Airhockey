@@ -9,8 +9,10 @@ namespace Source.Core
     public class Game
     {
         private static readonly Vector2f WindowSize = new(1000, 500);
-        private const float PlayerRadius = 30f;
         private static readonly Color TextColor = Color.White;
+
+        private const float PlayerRadius = 30f;
+        private const float PuckRadius = 15f;
 
         private RenderWindow _window;
         
@@ -49,7 +51,7 @@ namespace Source.Core
 			_field = new(WindowSize.X, WindowSize.Y, borderWidth, WindowSize.Y / 3f);
 			_player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), WindowSize);
 			_player2 = new(InputType.Arrows, PlayerRadius, new(WindowSize.X - 100, halfHeight), WindowSize);
-			_puck = new(15f, new(WindowSize.X / 2, halfHeight));
+			_puck = new(PuckRadius, new(WindowSize.X / 2, halfHeight));
             _clock = new();
 		}
 
@@ -87,9 +89,9 @@ namespace Source.Core
         {
             var deltaTime = _clock.Restart().AsSeconds();
 
-            _player1.Move(deltaTime);
-            _player2.Move(deltaTime);
-            _puck.Move(deltaTime);
+            _player1.Update(deltaTime);
+            _player2.Update(deltaTime);
+            _puck.Update(deltaTime);
 
             if (_field.IsInGoal(_puck, out GoalSide goalSide))
             {

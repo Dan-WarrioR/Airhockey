@@ -74,18 +74,12 @@ namespace Source.Map
 			Vector2f vecrticalLineSize = new(borderWidth, Height);
 
 			//Horizontal borders
-			_objects.Add(new(new RectangleShape(horizontalLineSize)));
-			_objects.Add(new(new RectangleShape(horizontalLineSize)
-			{
-				Position = new(0, Height - borderWidth),
-			}));
+			_objects.Add(new(new RectangleShape(horizontalLineSize), new(0, 0)));
+			_objects.Add(new(new RectangleShape(horizontalLineSize), new(0, Height - borderWidth)));
 
 			//Vertical borders
-			_objects.Add(new(new RectangleShape(vecrticalLineSize)));
-			_objects.Add(new(new RectangleShape(vecrticalLineSize)
-			{
-				Position = new(widthDelta, 0),
-			}));
+			_objects.Add(new(new RectangleShape(vecrticalLineSize), new(0, 0)));
+			_objects.Add(new(new RectangleShape(vecrticalLineSize), new(widthDelta, 0)));
 
 			//Center line
 			//_objects.Add(new(new RectangleShape(vecrticalLineSize)
@@ -95,7 +89,7 @@ namespace Source.Map
 
 			foreach (var rectangle in _objects)
 			{
-				rectangle.Shape.FillColor = BorderColor;
+				rectangle.ChangeShapeColor(BorderColor);
 			}
 		}
 
@@ -103,16 +97,11 @@ namespace Source.Map
 		{
 			var gateSize = new Vector2f(borderWidth, heightDelta / 2);
 
-			_leftGate = new(new RectangleShape(gateSize)
-			{
-				Position = new(0, heightDelta / 2),
-				FillColor = GateColor,
-			});
-			_rightGate = new(new RectangleShape(gateSize)
-			{
-				Position = new(widthDelta, heightDelta / 2),
-				FillColor = GateColor,
-			});
+			_leftGate = new(new RectangleShape(gateSize), new(0, heightDelta / 2));
+			_rightGate = new(new RectangleShape(gateSize), new(widthDelta, heightDelta / 2));
+
+			_leftGate.ChangeShapeColor(GateColor);
+			_rightGate.ChangeShapeColor(GateColor);
 
 			_objects.Add(_leftGate);
 			_objects.Add(_rightGate);

@@ -5,26 +5,34 @@ namespace Source.Objects
 {
 	public class GameObject : Drawable
 	{
+		protected virtual Color FillColor => Color.White;
+
 		public FloatRect ObjectRect => Shape.GetGlobalBounds();
 
 		public Vector2f Position => Shape.Position;
 
-		public Shape Shape { get; }
+		protected Vector2f InitialPosition { get; }
 
-		public GameObject(Shape shape)
+		protected Shape Shape { get; }
+
+		public GameObject(Shape shape, Vector2f initialPosition)
 		{
 			Shape = shape;
+			InitialPosition = initialPosition;
+
+			Shape.Position = initialPosition;
+			Shape.FillColor = FillColor;
 		}
 
-		public virtual void Update()
+		public void ChangeShapeColor(Color color)
+		{
+			Shape.FillColor = color;
+		}
+
+		public virtual void Update(float deltaTime)
 		{
 			 
 		}	
-
-		public virtual void Move(float deltaTime)
-		{
-
-		}
 
 		public virtual bool CollideWith(GameObject gameObject)
 		{

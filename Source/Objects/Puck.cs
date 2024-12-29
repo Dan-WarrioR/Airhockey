@@ -1,37 +1,21 @@
 ﻿using SFML.Graphics;
 using SFML.System;
+using Source.Tools;
 
 namespace Source.Objects
 {
-    public class Puck : GameObject
+    public class Puck : SphereObject
     {
-		private static readonly Color PuckColor = Color.White;
-		private static readonly Color PuckThicknessColor = Color.Black;
-
-		private const float Speed = 400f;
-		private const float PuckThickness = 1f;
-
-		public float Radius { get; }
+		private const float Speed = 100f;
 
 		public Vector2f Velocity { get; private set; }
 
-		private Vector2f InitialPosition { get; }
-
-		public Puck(float radius, Vector2f initialPosition) : base(new CircleShape(radius))
+		public Puck(float radius, Vector2f initialPosition) : base(radius, initialPosition)
 		{
-			Radius = radius;
-			InitialPosition = initialPosition;
-
-			Shape.FillColor = PuckColor;
-			Shape.Origin = new(Radius, Radius);
-			Shape.Position = initialPosition;
-			Shape.OutlineThickness = PuckThickness;
-			Shape.OutlineColor = PuckThicknessColor;
-
 			GenerateVelocity();
 		}
 
-		public override void Move(float deltaTime)
+		public override void Update(float deltaTime)
 		{
 			Shape.Position += Velocity * deltaTime;
 		}

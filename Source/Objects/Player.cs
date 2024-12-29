@@ -24,11 +24,9 @@ namespace Source.Objects
 		WASD,
 	}
 
-	public class Player : GameObject
+	public class Player : SphereObject
 	{
 		private const float _speed = 350f;
-
-		public float Radius { get; }
 
 		public int Score { get; set; } = 0;
 
@@ -41,17 +39,12 @@ namespace Source.Objects
 
 		private bool _isLeftSide = false;
 
-		public Player(InputType inputType, float radius, Vector2f startPosition, Vector2f mapSize) : base(new CircleShape(radius))
+		public Player(InputType inputType, float radius, Vector2f initialPosition, Vector2f mapSize) : base(radius, initialPosition)
 		{
 			_inputType = inputType;
-			Radius = radius;
 
 			_mapSize = mapSize;
-			_isLeftSide = startPosition.X < mapSize.X / 2;
-
-			Shape.Position = startPosition;
-			Shape.FillColor = Color.White;
-			Shape.Origin = new(Radius, Radius);
+			_isLeftSide = initialPosition.X < mapSize.X / 2;
 
 			_keyMap = _inputType switch
 			{
@@ -77,7 +70,7 @@ namespace Source.Objects
 			_delta = GetDelta();	
 		}
 
-		public override void Move(float deltaTime)
+		public override void Update(float deltaTime)
 		{
 			Shape.Position += _delta * _speed * deltaTime;
 
@@ -92,6 +85,7 @@ namespace Source.Objects
 
 			float x = Math.Clamp(Shape.Position.X, minX, maxX);
 			float y = Math.Clamp(Shape.Position.Y, Radius, _mapSize.Y - Radius);
+
 			Shape.Position = new(x, y);
 		}	
 
