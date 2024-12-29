@@ -6,8 +6,10 @@ namespace Source.Objects
     public class Puck : GameObject
     {
 		private static readonly Color PuckColor = Color.White;
+		private static readonly Color PuckThicknessColor = Color.Black;
 
-		private const float Speed = 0.5f;
+		private const float Speed = 400f;
+		private const float PuckThickness = 1f;
 
 		public float Radius { get; }
 
@@ -23,13 +25,15 @@ namespace Source.Objects
 			Shape.FillColor = PuckColor;
 			Shape.Origin = new(Radius, Radius);
 			Shape.Position = initialPosition;
+			Shape.OutlineThickness = PuckThickness;
+			Shape.OutlineColor = PuckThicknessColor;
 
 			GenerateVelocity();
 		}
 
-		public void Move()
+		public override void Move(float deltaTime)
 		{
-			Shape.Position += Velocity;
+			Shape.Position += Velocity * deltaTime;
 		}
 
 		public void Reset()

@@ -23,6 +23,8 @@ namespace Source.Core
 
 		private Text _scoreText;
 
+        private Clock _clock;
+
 		public Game()
         {
             InitializeWindow();
@@ -48,6 +50,7 @@ namespace Source.Core
 			_player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), WindowSize);
 			_player2 = new(InputType.Arrows, PlayerRadius, new(WindowSize.X - 100, halfHeight), WindowSize);
 			_puck = new(15f, new(WindowSize.X / 2, halfHeight));
+            _clock = new();
 		}
 
 		private void LoadScoreText()
@@ -82,9 +85,11 @@ namespace Source.Core
 
         private void ProcessLogic()
         {
-            _player1.Move();
-            _player2.Move();
-            _puck.Move();
+            var deltaTime = _clock.Restart().AsSeconds();
+
+            _player1.Move(deltaTime);
+            _player2.Move(deltaTime);
+            _puck.Move(deltaTime);
 
             if (_field.IsInGoal(_puck, out GoalSide goalSide))
             {

@@ -26,7 +26,7 @@ namespace Source.Objects
 
 	public class Player : GameObject
 	{
-		private const float _speed = 0.5f;
+		private const float _speed = 350f;
 
 		public float Radius { get; }
 
@@ -52,7 +52,7 @@ namespace Source.Objects
 			Shape.Position = startPosition;
 			Shape.FillColor = Color.White;
 			Shape.Origin = new(Radius, Radius);
-			
+
 			_keyMap = _inputType switch
 			{
 				InputType.WASD => new()
@@ -77,9 +77,9 @@ namespace Source.Objects
 			_delta = GetDelta();	
 		}
 
-		public void Move()
+		public override void Move(float deltaTime)
 		{
-			Shape.Position += _delta * _speed;
+			Shape.Position += _delta * _speed * deltaTime;
 
 			ClampPosition();
 		}

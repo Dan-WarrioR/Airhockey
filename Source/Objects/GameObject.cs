@@ -21,6 +21,11 @@ namespace Source.Objects
 			 
 		}	
 
+		public virtual void Move(float deltaTime)
+		{
+
+		}
+
 		public virtual bool CollideWith(GameObject gameObject)
 		{
 			return ObjectRect.Intersects(gameObject.ObjectRect);
