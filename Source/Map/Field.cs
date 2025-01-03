@@ -5,13 +5,23 @@ using Color = SFML.Graphics.Color;
 
 namespace Source.Map
 {
+	public enum BorderType
+	{
+		Up,
+		Down, 
+		Left, 
+		Right,
+		LeftGate,
+		RightGate,
+	}
+
 	public enum GoalSide
 	{
 		Left,
 		Right,
 	}
 
-    public class Field
+    public class Field : GameObject
     {
 		private static readonly Color BorderColor = Color.White;
 		private static readonly Color GateColor = Color.Black;
@@ -19,17 +29,14 @@ namespace Source.Map
         public float Width { get; }
         public float Height { get; }
         
-        private List<GameObject> _objects;
+		private Dictionary<BorderType, Shape> _borders;
 
-        private GameObject _leftGate;
-        private GameObject _rightGate;
-
-        public Field(float width, float height, float borderWidth, float gateHeight)
+		public Field(float width, float height, float borderWidth, float gateHeight) : base(new(0, 0))
         {
             Width = width;
             Height = height;
 
-            _objects = new();
+			_borders = new();
 
 			float widthDelta = Width - borderWidth;
 			float heightDelta = Height - gateHeight;
@@ -38,25 +45,22 @@ namespace Source.Map
 
 			PlacePlayerGates(widthDelta, heightDelta, borderWidth, gateHeight);
 		}
-        
-        public void Draw(RenderWindow window)
-        {
-            foreach (var gameObject in _objects)
-            {
-                window.Draw(gameObject); 
-            }
+
+		protected override void ChangePosition(Vector2f position)
+		{
+			
 		}
 
 		public bool IsInGoal(Puck puck, out GoalSide goalSide)
 		{
-			if (_leftGate.CollideWith(puck))
+			if (IsIntersects(BorderType.LeftGate, puck))
 			{
 				goalSide = GoalSide.Left;
 
 				return true;
 			}
 
-			if (_rightGate.CollideWith(puck))
+			if (IsIntersects(BorderType.RightGate, puck))
 			{
 				goalSide = GoalSide.Right;
 
@@ -68,28 +72,56 @@ namespace Source.Map
 			return false;
 		}
 
-        private void PlaceBorders(float widthDelta, float borderWidth, float gateHeight)
+		public bool IsIntersects(BorderType borderType, ShapeObject targetObject)
+		{
+			if (!_borders.TryGetValue(borderType, out Shape? shape))
+			{
+				return false;
+			}
+
+			return IsIntersects(shape, targetObject);
+		}
+		
+		public override void Draw(RenderTarget target, RenderStates states)
+		{
+			foreach (var item in _borders.Values)
+			{
+				item.Draw(target, states);
+			}
+		}
+
+		private bool IsIntersects(Shape shape, ShapeObject otherObject)
+		{
+			var shapeBounds = shape.GetGlobalBounds();
+
+			return shapeBounds.Intersects(otherObject.ObjectRect);
+		}
+
+		private void PlaceBorders(float widthDelta, float borderWidth, float gateHeight)
         {	
 			Vector2f horizontalLineSize = new(Width, borderWidth);
 			Vector2f vecrticalLineSize = new(borderWidth, Height);
 
-			//Horizontal borders
-			_objects.Add(new(new RectangleShape(horizontalLineSize), new(0, 0)));
-			_objects.Add(new(new RectangleShape(horizontalLineSize), new(0, Height - borderWidth)));
-
-			//Vertical borders
-			_objects.Add(new(new RectangleShape(vecrticalLineSize), new(0, 0)));
-			_objects.Add(new(new RectangleShape(vecrticalLineSize), new(widthDelta, 0)));
-
-			//Center line
-			//_objects.Add(new(new RectangleShape(vecrticalLineSize)
-			//{
-			//	Position = new(Width / 2f, 0),
-			//}));
-
-			foreach (var rectangle in _objects)
+			var upBorder = new RectangleShape(horizontalLineSize);
+			var downBorder = new RectangleShape(horizontalLineSize)
 			{
-				rectangle.ChangeShapeColor(BorderColor);
+				Position = new(0, Height - borderWidth),
+			};
+
+			var leftBorder = new RectangleShape(vecrticalLineSize);
+			var rightBorder = new RectangleShape(vecrticalLineSize)
+			{
+				Position = new(widthDelta, 0),
+			};
+
+			_borders.Add(BorderType.Up, upBorder);
+			_borders.Add(BorderType.Down, downBorder);
+			_borders.Add(BorderType.Left, leftBorder);
+			_borders.Add(BorderType.Right, rightBorder);
+
+			foreach (var shape in _borders.Values)
+			{
+				shape.FillColor = BorderColor;
 			}
 		}
 
@@ -97,14 +129,20 @@ namespace Source.Map
 		{
 			var gateSize = new Vector2f(borderWidth, heightDelta / 2);
 
-			_leftGate = new(new RectangleShape(gateSize), new(0, heightDelta / 2));
-			_rightGate = new(new RectangleShape(gateSize), new(widthDelta, heightDelta / 2));
+			var leftGate = new RectangleShape(gateSize)
+			{
+				Position = new(0, heightDelta / 2),
+				FillColor = GateColor,
+			};
 
-			_leftGate.ChangeShapeColor(GateColor);
-			_rightGate.ChangeShapeColor(GateColor);
+			var rightGate = new RectangleShape(gateSize)
+			{
+				Position = new(widthDelta, heightDelta / 2),
+				FillColor = GateColor,
+			};
 
-			_objects.Add(_leftGate);
-			_objects.Add(_rightGate);
-		}
+			_borders.Add(BorderType.LeftGate, leftGate);
+			_borders.Add(BorderType.RightGate, rightGate);
+		}		
 	}
 }
