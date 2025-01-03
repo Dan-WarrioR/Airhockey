@@ -4,7 +4,7 @@ using Source.Tools;
 
 namespace Source.Objects
 {
-	public class SphereObject : GameObject
+	public class SphereObject : ShapeObject
 	{
 		public float Radius { get; }
 
@@ -15,7 +15,7 @@ namespace Source.Objects
 			Shape.Origin = new(Radius, Radius);
 		}
 
-		public virtual bool CollideWith(SphereObject sphere)
+		public virtual bool IsIntersects(SphereObject sphere)
 		{
 			float distanceToObject = Position.Distance(sphere.Position);
 
