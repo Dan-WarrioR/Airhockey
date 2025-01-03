@@ -1,5 +1,4 @@
-﻿using SFML.Graphics;
-using SFML.System;
+﻿using SFML.System;
 using SFML.Window;
 
 namespace Source.Objects
@@ -72,7 +71,7 @@ namespace Source.Objects
 
 		public override void Update(float deltaTime)
 		{
-			Shape.Position += _delta * _speed * deltaTime;
+			ChangePosition(_speed * deltaTime * _delta + Position);
 
 			ClampPosition();
 		}
@@ -83,10 +82,10 @@ namespace Source.Objects
 			float minX = _isLeftSide ? Radius : centerX + Radius;
 			float maxX = _isLeftSide ? centerX - Radius : _mapSize.X - Radius;
 
-			float x = Math.Clamp(Shape.Position.X, minX, maxX);
-			float y = Math.Clamp(Shape.Position.Y, Radius, _mapSize.Y - Radius);
+			float x = Math.Clamp(Position.X, minX, maxX);
+			float y = Math.Clamp(Position.Y, Radius, _mapSize.Y - Radius);
 
-			Shape.Position = new(x, y);
+			ChangePosition(new(x, y));
 		}	
 
 		private Vector2f GetDelta()
