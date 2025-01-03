@@ -4,7 +4,7 @@ namespace Source.Objects
 {
 	public class Puck : SphereObject
     {
-		private const float Speed = 400f;
+		private const float Speed = 250f;
 
 		public Vector2f Velocity { get; private set; }
 

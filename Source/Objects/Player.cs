@@ -25,7 +25,7 @@ namespace Source.Objects
 
 	public class Player : SphereObject
 	{
-		private const float _speed = 350f;
+		private const float _speed = 200f;
 
 		public int Score { get; set; } = 0;
 
