@@ -1,6 +1,5 @@
 ﻿using SFML.Graphics;
 using SFML.System;
-using SFML.Window;
 using Source.Objects;
 using Source.Map;
 
@@ -8,9 +7,6 @@ namespace Source.Core
 {
     public class Game
     {
-        private static readonly Vector2f WindowSize = new(1000, 500);
-        private static readonly Color TextColor = Color.White;
-
         private const float PlayerRadius = 30f;
         private const float PuckRadius = 15f;
 
@@ -23,46 +19,40 @@ namespace Source.Core
 
         private Field _field;
 
-		private Text _scoreText;
+		private TextObject _scoreText;
 
         private Clock _clock;
 
-		public Game()
+        private GameObjectManager _gameObjectManager;
+
+		public Game(RenderWindow window, GameObjectManager gameObjectManager)
         {
-            InitializeWindow();
+			_window = window;
+            _gameObjectManager = gameObjectManager;
 
-            InitializeObjects();
-
-			LoadScoreText();
+			InitializeObjects();
 		}
-        
-        private void InitializeWindow()
-        {
-            var videoMode = new VideoMode((uint)WindowSize.X, (uint)WindowSize.Y);
-            _window = new(videoMode, "Air Hockey");
-            _window.Closed += (_, _) => _window.Close();
-        }
 
         private void InitializeObjects()
         {
 			float borderWidth = 3f;
-			float halfHeight = WindowSize.Y / 2f;
 
-			_field = new(WindowSize.X, WindowSize.Y, borderWidth, WindowSize.Y / 3f);
-			_player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), WindowSize);
-			_player2 = new(InputType.Arrows, PlayerRadius, new(WindowSize.X - 100, halfHeight), WindowSize);
-			_puck = new(PuckRadius, new(WindowSize.X / 2, halfHeight));
+            var windowSize = (Vector2f)_window.Size;
+
+			float halfHeight = windowSize.Y / 2f;
+
+			_field = new(windowSize.X, windowSize.Y, borderWidth, windowSize.Y / 3f);
+			_player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), windowSize);
+			_player2 = new(InputType.Arrows, PlayerRadius, new(windowSize.X - 100, halfHeight), windowSize);
+			_puck = new(PuckRadius, new(windowSize.X / 2, halfHeight));
+            _scoreText = new(new(10, 10), $"{_player1.Score} | {_player2.Score}");
             _clock = new();
-		}
 
-		private void LoadScoreText()
-		{
-			var font = new Font(@"C:\Windows\Fonts\Arial.ttf");
-			_scoreText = new($"{_player1.Score} | {_player2.Score}", font, 24)
-			{
-				FillColor = TextColor,
-				Position = new(10, 10),
-			};
+            _gameObjectManager.Add(_field);
+            _gameObjectManager.Add(_player1);
+            _gameObjectManager.Add(_player2);
+            _gameObjectManager.Add(_puck);
+            _gameObjectManager.Add(_scoreText);
 		}
 
 		public void StartGame()
@@ -89,9 +79,7 @@ namespace Source.Core
         {
             var deltaTime = _clock.Restart().AsSeconds();
 
-            _player1.Update(deltaTime);
-            _player2.Update(deltaTime);
-            _puck.Update(deltaTime);
+            _gameObjectManager.UpdateAll(deltaTime);
 
             if (_field.IsInGoal(_puck, out GoalSide goalSide))
             {
@@ -168,18 +156,8 @@ namespace Source.Core
         
         
         private void Draw()
-        {
-            _window.Clear(Color.Black);
-
-            _field.Draw(_window);
-            
-            _window.Draw(_player1);
-            _window.Draw(_player2);
-            _window.Draw(_puck);
-
-            _window.Draw(_scoreText);
-
-			_window.Display(); 
-        }
+        {		
+			_gameObjectManager.DrawAll();			
+		}
     }
 }
