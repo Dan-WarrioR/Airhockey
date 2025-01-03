@@ -9,11 +9,12 @@ namespace Source.Core
     {
         private const float PlayerRadius = 30f;
         private const float PuckRadius = 15f;
+        private const float BorderWidth = 3f;
 
         private RenderWindow _window;
         
-        private Player _player1;
-        private Player _player2;
+        private Player _rightPlayer;
+        private Player _leftPlayer;
         
         private Puck _puck;
 
@@ -35,22 +36,20 @@ namespace Source.Core
 
         private void InitializeObjects()
         {
-			float borderWidth = 3f;
-
             var windowSize = (Vector2f)_window.Size;
 
 			float halfHeight = windowSize.Y / 2f;
 
-			_field = new(windowSize.X, windowSize.Y, borderWidth, windowSize.Y / 3f);
-			_player1 = new(InputType.WASD, PlayerRadius, new(100, halfHeight), windowSize);
-			_player2 = new(InputType.Arrows, PlayerRadius, new(windowSize.X - 100, halfHeight), windowSize);
+			_field = new(windowSize.X, windowSize.Y, BorderWidth, windowSize.Y / 3f);
+			_rightPlayer = new(InputType.WASD, PlayerRadius, new(100, halfHeight), windowSize);
+			_leftPlayer = new(InputType.Arrows, PlayerRadius, new(windowSize.X - 100, halfHeight), windowSize);
 			_puck = new(PuckRadius, new(windowSize.X / 2, halfHeight));
-            _scoreText = new(new(10, 10), $"{_player1.Score} | {_player2.Score}");
+            _scoreText = new(new(10, 10), $"{_rightPlayer.Score} | {_leftPlayer.Score}");
             _clock = new();
 
             _gameObjectManager.Add(_field);
-            _gameObjectManager.Add(_player1);
-            _gameObjectManager.Add(_player2);
+            _gameObjectManager.Add(_rightPlayer);
+            _gameObjectManager.Add(_leftPlayer);
             _gameObjectManager.Add(_puck);
             _gameObjectManager.Add(_scoreText);
 		}
@@ -71,8 +70,8 @@ namespace Source.Core
         {
             _window.DispatchEvents();
             
-            _player1.HandleInput();
-            _player2.HandleInput();
+            _rightPlayer.HandleInput();
+            _leftPlayer.HandleInput();
 		}
 
         private void ProcessLogic()
@@ -93,12 +92,12 @@ namespace Source.Core
 
         private void CheckPuckWallCollisions()
         {
-			if (_puck.Position.X - _puck.Radius <= 0 || _puck.Position.X + _puck.Radius >= _field.Width)
+			if (_field.IsIntersects(BorderType.Left, _puck) || _field.IsIntersects(BorderType.Right, _puck))
 			{
 				_puck.ChangeVelocity(new(-_puck.Velocity.X, _puck.Velocity.Y));
 			}
 
-			if (_puck.Position.Y - _puck.Radius <= 0 || _puck.Position.Y + _puck.Radius >= _field.Height)
+			if (_field.IsIntersects(BorderType.Up, _puck) || _field.IsIntersects(BorderType.Down, _puck))
 			{
 				_puck.ChangeVelocity(new(_puck.Velocity.X, -_puck.Velocity.Y));
 			}
@@ -106,42 +105,22 @@ namespace Source.Core
 
         private void CheckPuckWithPlayerCollisions()
         {
-            if (_puck.CollideWith(_player1))
+            if (_puck.IsIntersects(_rightPlayer))
             {
-				ChangePuckVelocity(_player1);
+                _puck.ChangeVelocityFromPosition(_rightPlayer.Position);
 			}
-			else if (_puck.CollideWith(_player2))
+			else if (_puck.IsIntersects(_leftPlayer))
 			{
-				ChangePuckVelocity(_player2);
+				_puck.ChangeVelocityFromPosition(_leftPlayer.Position);
 			}
-		}
-
-        private void ChangePuckVelocity(Player player)
-        {
-			Vector2f direction = _puck.Position - player.Position;
-
-			float magnitude = MathF.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
-
-			if (magnitude == 0)
-            {
-                return;
-            }
-
-			direction /= magnitude;
-
-			float speed = MathF.Sqrt(_puck.Velocity.X * _puck.Velocity.X + _puck.Velocity.Y * _puck.Velocity.Y);
-
-			Vector2f newVelocity = direction * speed;
-
-			_puck.ChangeVelocity(newVelocity);
 		}
 
         private void UpdateScore(GoalSide goalSide)
         {
-            Player player = goalSide == GoalSide.Right ? _player1 : _player2;
+            Player player = goalSide == GoalSide.Right ? _rightPlayer : _leftPlayer;
             player.Score++;
 
-            _scoreText.DisplayedString = $"{_player1.Score} | {_player2.Score}";
+            _scoreText.ChangeText($"{_rightPlayer.Score} | {_leftPlayer.Score}");
 
 			_puck.Reset();
         }
