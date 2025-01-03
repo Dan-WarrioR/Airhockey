@@ -6,9 +6,9 @@ namespace Source
     {
         static void Main(string[] args)
         {
-            Game game = new();
+            Application application = new();
 
-            game.StartGame();
+			application.Start();
         }
     }
 }
