@@ -20,19 +20,9 @@ namespace Source.Objects
 			Shape.Position = initialPosition;
 		}
 
-		public override void Update(float deltaTime)
-		{
-			
-		}
-
-		public override void ChangePosition(Vector2f position)
+		protected override void ChangePosition(Vector2f position)
 		{
 			Shape.Position = position;
-		}
-
-		public void ChangeShapeColor(Color color)
-		{
-			Shape.FillColor = color;
 		}
 
 		public virtual bool IsIntersects(ShapeObject shapeObject)

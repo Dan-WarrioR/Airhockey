@@ -5,7 +5,7 @@ namespace Source.Objects
 {
 	public abstract class GameObject : Drawable
 	{
-		public virtual Vector2f Position { get; private set; }
+		public virtual Vector2f Position { get; }
 
 		protected Vector2f InitialPosition { get; }
 
@@ -16,10 +16,7 @@ namespace Source.Objects
 			Position = initialPosition;
 		}
 
-		public virtual void ChangePosition(Vector2f position)
-		{
-			Position = position;
-		}
+		protected abstract void ChangePosition(Vector2f position);
 
 		public virtual void Update(float deltaTime)
 		{
