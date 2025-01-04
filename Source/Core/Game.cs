@@ -25,14 +25,14 @@ namespace Source.Core
 
         private Clock _clock;
 
-        private EntityHandler _gameObjectManager;
+        private EntityHandler _entityHandler;
 
         public event Action<int, int> OnScoreChanged;
 
-		public Game(RenderWindow window, EntityHandler gameObjectManager)
+		public Game(RenderWindow window, EntityHandler entityHandler)
         {
 			_window = window;
-            _gameObjectManager = gameObjectManager;
+            _entityHandler = entityHandler;
 
 			InitializeObjects();
 		}
@@ -54,11 +54,11 @@ namespace Source.Core
 
             OnScoreChanged += _scoreText.OnScoreChanged;
 
-			_gameObjectManager.Add(_field);
-            _gameObjectManager.Add(_rightPlayer);
-            _gameObjectManager.Add(_leftPlayer);
-            _gameObjectManager.Add(_puck);
-            _gameObjectManager.Add(_scoreText);
+			_entityHandler.Add(_field);
+            _entityHandler.Add(_rightPlayer);
+            _entityHandler.Add(_leftPlayer);
+            _entityHandler.Add(_puck);
+            _entityHandler.Add(_scoreText);
 		}
 
 		public void StartGame()
@@ -85,7 +85,7 @@ namespace Source.Core
         {
             var deltaTime = _clock.Restart().AsSeconds();
 
-            _gameObjectManager.UpdateAll(deltaTime);
+            _entityHandler.UpdateAll(deltaTime);
 
             if (_field.IsInGoal(_puck, out GoalSide goalSide))
             {
@@ -145,7 +145,7 @@ namespace Source.Core
         
         private void Draw()
         {		
-			_gameObjectManager.DrawAll();			
+			_entityHandler.DrawAll();			
 		}
     }
 }

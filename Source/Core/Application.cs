@@ -14,9 +14,9 @@ namespace Source.Core
 		{
 			RenderWindow window = CreateWindow();
 
-			EntityHandler gameObjectManager = new(window);
+			EntityHandler entityHandler = new(window);
 
-			Game game = new(window, gameObjectManager);
+			Game game = new(window, entityHandler);
 
 			game.StartGame();
 		}
@@ -25,6 +25,9 @@ namespace Source.Core
 		{
 			var videoMode = new VideoMode((uint)WindowSize.X, (uint)WindowSize.Y);
 			var window = new RenderWindow(videoMode, WindowAppName);
+
+			window.SetFramerateLimit(60);
+			window.SetVerticalSyncEnabled(true);
 
 			window.Closed += (_, _) => window.Close();
 
