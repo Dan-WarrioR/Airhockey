@@ -1,5 +1,6 @@
 ﻿using SFML.System;
 using SFML.Window;
+using Source.Abilities;
 
 namespace Source.Objects
 {
@@ -27,23 +28,15 @@ namespace Source.Objects
 	{
 		private const float _speed = 250f;
 
-		//Dash
-
-		private const float _dashMultiplier = 2.5f;
-		private const float _dashDuration = 0.2f;
-		private const float _dashCooldown = 1.0f;
-
 		public int Score { get; set; } = 0;
 
-		public float SpeedMultiplier => _isDashing ? _dashMultiplier : 1f;
+		public float SpeedMultiplier => _dashAbility.SpeedMultiplier;
 
 		private Vector2f _delta;
 
-		private float _currentDashTime = 0f;
-		private float _dashCooldownTime = 0f;
-
-		private bool _isDashing = false;
 		private bool _isDashPressed = false;
+
+		private DashAbility _dashAbility;
 
 		private InputType _inputType;
 		private Vector2f _mapSize;
@@ -58,6 +51,8 @@ namespace Source.Objects
 
 			_mapSize = mapSize;
 			_isLeftSide = initialPosition.X < mapSize.X / 2;
+
+			_dashAbility = new DashAbility();
 
 			_keyMap = _inputType switch
 			{
@@ -89,7 +84,7 @@ namespace Source.Objects
 		{
 			TryStartDash();
 
-			UpdateDash(deltaTime);
+			_dashAbility.Update(deltaTime);
 
 			float currentSpeed = _speed * SpeedMultiplier;
 
@@ -136,23 +131,17 @@ namespace Source.Objects
 				return;
 			}
 
-			StartDash();
+			_dashAbility.TryApply();
 		}
 
 		private bool CanStartDash()
 		{
-			if (!_isDashPressed || _delta == new Vector2f(0, 0) || _isDashing || _dashCooldownTime > 0)
+			if (!_isDashPressed || _delta == new Vector2f(0, 0))
 			{
 				return false;
 			}
 
 			return true;
-		}
-
-		private void StartDash()
-		{
-			_isDashing = true;
-			_currentDashTime = 0f;
 		}
 
 		private bool OnDashKeyPressed()
@@ -162,30 +151,6 @@ namespace Source.Objects
 				InputType.WASD => Keyboard.IsKeyPressed(Keyboard.Key.LShift),
 				InputType.Arrows => Keyboard.IsKeyPressed(Keyboard.Key.RShift),
 			};
-		}
-
-		private void UpdateDash(float deltaTime)
-		{
-			if (_isDashing)
-			{
-				_currentDashTime += deltaTime;
-
-				if (_currentDashTime >= _dashDuration)
-				{
-					EndDash();
-				}
-
-				return;
-			}
-
-			_dashCooldownTime -= deltaTime;
-		}
-
-		private void EndDash()
-		{
-			_isDashing = false;
-			_dashCooldownTime = _dashCooldown;
-			_currentDashTime = 0f;
 		}
 	}
 }
