@@ -1,5 +1,6 @@
 ﻿using SFML.Graphics;
 using SFML.System;
+using Source.Tools;
 
 namespace Source.Objects
 {
@@ -38,24 +39,17 @@ namespace Source.Objects
 		{
 			Vector2f direction = Position - targetPosition;
 
-			float magnitude = MathF.Sqrt(direction.X * direction.X + direction.Y * direction.Y);
-
-			if (magnitude == 0)
-			{
-				return;
-			}
-
-			direction /= magnitude;
+			Vector2f normalizedDirection = direction.Normalize();
 
 			float newSpeed = Speed * targetSpeed;
-			Vector2f newVelocity = direction * newSpeed;
+			Vector2f newVelocity = normalizedDirection * newSpeed;
 
 			ChangeVelocity(newVelocity);
 		}
 
 		public void Validate()
 		{
-			if (Position.X <= _windowBounds.Left || Position.X >= _windowBounds.Size.X || Position.Y <= _windowBounds.Top || Position.Y >= _windowBounds.Size.Y)
+			if (!_windowBounds.Contains(Position))
 			{
 				Reset();
 			}
