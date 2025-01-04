@@ -1,5 +1,5 @@
-﻿using SFML.System;
-using System.Numerics;
+﻿using SFML.Graphics;
+using SFML.System;
 
 namespace Source.Objects
 {
@@ -9,8 +9,12 @@ namespace Source.Objects
 
 		public Vector2f Velocity { get; private set; }
 
-		public Puck(float radius, Vector2f initialPosition) : base(radius, initialPosition)
+		private FloatRect _windowBounds;
+
+		public Puck(float radius, Vector2f initialPosition, FloatRect windowBounds) : base(radius, initialPosition)
 		{
+			_windowBounds = windowBounds;
+
 			GenerateVelocity();
 		}
 
@@ -47,6 +51,14 @@ namespace Source.Objects
 			Vector2f newVelocity = direction * newSpeed;
 
 			ChangeVelocity(newVelocity);
+		}
+
+		public void Validate()
+		{
+			if (Position.X <= _windowBounds.Left || Position.X >= _windowBounds.Size.X || Position.Y <= _windowBounds.Top || Position.Y >= _windowBounds.Size.Y)
+			{
+				Reset();
+			}
 		}
 
 		private void GenerateVelocity()

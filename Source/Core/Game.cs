@@ -12,8 +12,9 @@ namespace Source.Core
         private const float BorderWidth = 3f;
 
         private RenderWindow _window;
-        
-        private Player _rightPlayer;
+        private FloatRect _windowBounds;
+
+		private Player _rightPlayer;
         private Player _leftPlayer;
         
         private Puck _puck;
@@ -38,12 +39,14 @@ namespace Source.Core
         {
             var windowSize = (Vector2f)_window.Size;
 
+			_windowBounds = new(0, 0, windowSize.X ,windowSize.Y);
+
 			float halfHeight = windowSize.Y / 2f;
 
 			_field = new(windowSize.X, windowSize.Y, BorderWidth, windowSize.Y / 3f);
 			_rightPlayer = new(InputType.WASD, PlayerRadius, new(100, halfHeight), windowSize);
 			_leftPlayer = new(InputType.Arrows, PlayerRadius, new(windowSize.X - 100, halfHeight), windowSize);
-			_puck = new(PuckRadius, new(windowSize.X / 2, halfHeight));
+			_puck = new(PuckRadius, new(windowSize.X / 2, halfHeight), _windowBounds);
             _scoreText = new(new(10, 10), $"{_rightPlayer.Score} | {_leftPlayer.Score}");
             _clock = new();
 
@@ -89,7 +92,7 @@ namespace Source.Core
 
             CheckPuckWithPlayerCollisions();
 
-            ValidatePuck();
+            _puck.Validate();
 		}
 
         private void CheckPuckWallCollisions()
@@ -116,14 +119,6 @@ namespace Source.Core
 				_puck.ChangeVelocityFromPosition(_leftPlayer.Position, _leftPlayer.SpeedMultiplier);
 			}
 		}
-
-        private void ValidatePuck()
-        {
-            if (_puck.Position.X <= 0 || _puck.Position.X >= _window.Size.X || _puck.Position.Y <= 0 || _puck.Position.Y >= _window.Size.Y)
-            {
-                _puck.Reset();
-            }
-        }
 
         private void UpdateScore(GoalSide goalSide)
         {
