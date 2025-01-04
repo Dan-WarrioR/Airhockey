@@ -14,11 +14,11 @@ namespace Source.Objects
 
 		private Text _text;
 
-		public TextObject(Vector2f initialPosition, string text) : base(initialPosition)
+		public TextObject(Vector2f initialPosition) : base(initialPosition)
 		{
 			var font = new Font(FontPath);
 
-			_text = new(text, font, CharacterSize)
+			_text = new("0 | 0", font, CharacterSize)
 			{
 				FillColor = TextColor,
 				Position = initialPosition,
@@ -33,6 +33,11 @@ namespace Source.Objects
 		public void ChangeText(string text)
 		{
 			_text.DisplayedString = text;
+		}
+
+		public void OnScoreChanged(int leftPlayerScore, int rightPlayerScore)
+		{
+			ChangeText($"{rightPlayerScore} | {leftPlayerScore}");
 		}
 
 		public override void Draw(RenderTarget target, RenderStates states)

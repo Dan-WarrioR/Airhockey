@@ -27,6 +27,8 @@ namespace Source.Core
 
         private GameObjectManager _gameObjectManager;
 
+        public event Action<int, int> OnScoreChanged;
+
 		public Game(RenderWindow window, GameObjectManager gameObjectManager)
         {
 			_window = window;
@@ -47,10 +49,12 @@ namespace Source.Core
 			_rightPlayer = new(InputType.WASD, PlayerRadius, new(100, halfHeight), windowSize);
 			_leftPlayer = new(InputType.Arrows, PlayerRadius, new(windowSize.X - 100, halfHeight), windowSize);
 			_puck = new(PuckRadius, new(windowSize.X / 2, halfHeight), _windowBounds);
-            _scoreText = new(new(10, 10), $"{_rightPlayer.Score} | {_leftPlayer.Score}");
+            _scoreText = new(new(10, 10));
             _clock = new();
 
-            _gameObjectManager.Add(_field);
+            OnScoreChanged += _scoreText.OnScoreChanged;
+
+			_gameObjectManager.Add(_field);
             _gameObjectManager.Add(_rightPlayer);
             _gameObjectManager.Add(_leftPlayer);
             _gameObjectManager.Add(_puck);
@@ -123,11 +127,11 @@ namespace Source.Core
         private void UpdateScore(GoalSide goalSide)
         {
             Player player = goalSide == GoalSide.Right ? _rightPlayer : _leftPlayer;
-            player.Score++;
-
-            _scoreText.ChangeText($"{_rightPlayer.Score} | {_leftPlayer.Score}");
+			player.ChangeScore(player.Score + 1);
 
 			_puck.Reset();
+
+            OnScoreChanged?.Invoke(_leftPlayer.Score, _rightPlayer.Score);
         }
         
 

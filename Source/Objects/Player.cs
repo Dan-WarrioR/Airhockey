@@ -28,7 +28,7 @@ namespace Source.Objects
 	{
 		private const float _speed = 250f;
 
-		public int Score { get; set; } = 0;
+		public int Score { get; private set; } = 0;
 
 		public float SpeedMultiplier => _dashAbility.SpeedMultiplier;
 
@@ -71,6 +71,11 @@ namespace Source.Objects
 					new(Keyboard.Key.Right, 1, 0),
 				},
 			};
+		}
+
+		public void ChangeScore(int score)
+		{
+			Score = score;
 		}
 
 		public void HandleInput()
