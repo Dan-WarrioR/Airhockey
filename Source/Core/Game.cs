@@ -25,11 +25,11 @@ namespace Source.Core
 
         private Clock _clock;
 
-        private GameObjectManager _gameObjectManager;
+        private EntityHandler _gameObjectManager;
 
         public event Action<int, int> OnScoreChanged;
 
-		public Game(RenderWindow window, GameObjectManager gameObjectManager)
+		public Game(RenderWindow window, EntityHandler gameObjectManager)
         {
 			_window = window;
             _gameObjectManager = gameObjectManager;

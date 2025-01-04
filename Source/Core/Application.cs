@@ -14,7 +14,7 @@ namespace Source.Core
 		{
 			RenderWindow window = CreateWindow();
 
-			GameObjectManager gameObjectManager = new(window);
+			EntityHandler gameObjectManager = new(window);
 
 			Game game = new(window, gameObjectManager);
 

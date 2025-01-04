@@ -3,13 +3,13 @@ using Source.Objects;
 
 namespace Source.Core
 {
-	public class GameObjectManager
+	public class EntityHandler
 	{
 		private readonly List<GameObject> _gameObjects = new();
 
 		private readonly RenderWindow _window;
 
-		public GameObjectManager(RenderWindow window)
+		public EntityHandler(RenderWindow window)
 		{
 			_window = window;
 		}
