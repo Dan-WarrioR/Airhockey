@@ -25,11 +25,25 @@ namespace Source.Objects
 
 	public class Player : SphereObject
 	{
-		private const float _speed = 200f;
+		private const float _speed = 250f;
+
+		//Dash
+
+		private const float _dashMultiplier = 2.5f;
+		private const float _dashDuration = 0.2f;
+		private const float _dashCooldown = 1.0f;
 
 		public int Score { get; set; } = 0;
 
+		public float SpeedMultiplier => _isDashing ? _dashMultiplier : 1f;
+
 		private Vector2f _delta;
+
+		private float _currentDashTime = 0f;
+		private float _dashCooldownTime = 0f;
+
+		private bool _isDashing = false;
+		private bool _isDashPressed = false;
 
 		private InputType _inputType;
 		private Vector2f _mapSize;
@@ -66,12 +80,20 @@ namespace Source.Objects
 
 		public void HandleInput()
 		{
-			_delta = GetDelta();	
+			_delta = GetDelta();
+
+			_isDashPressed = OnDashKeyPressed();	
 		}
 
 		public override void Update(float deltaTime)
 		{
-			ChangePosition(_speed * deltaTime * _delta + Position);
+			TryStartDash();
+
+			UpdateDash(deltaTime);
+
+			float currentSpeed = _speed * SpeedMultiplier;
+
+			ChangePosition(currentSpeed * deltaTime * _delta + Position);
 
 			ClampPosition();
 		}
@@ -103,6 +125,67 @@ namespace Source.Objects
 			}
 
 			return new(deltaX, deltaY);
+		}
+
+		//Dash
+
+		private void TryStartDash()
+		{		
+			if (!CanStartDash())
+			{
+				return;
+			}
+
+			StartDash();
+		}
+
+		private bool CanStartDash()
+		{
+			if (!_isDashPressed || _delta == new Vector2f(0, 0) || _isDashing || _dashCooldownTime > 0)
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		private void StartDash()
+		{
+			_isDashing = true;
+			_currentDashTime = 0f;
+		}
+
+		private bool OnDashKeyPressed()
+		{
+			return _inputType switch
+			{
+				InputType.WASD => Keyboard.IsKeyPressed(Keyboard.Key.LShift),
+				InputType.Arrows => Keyboard.IsKeyPressed(Keyboard.Key.RShift),
+			};
+		}
+
+		private void UpdateDash(float deltaTime)
+		{
+			if (_isDashing)
+			{
+				_currentDashTime += deltaTime;
+
+				if (_currentDashTime >= _dashDuration)
+				{
+					EndDash();
+				}
+
+				return;
+			}
+
+			_dashCooldownTime -= deltaTime;
+		}
+
+		private void EndDash()
+		{
+			_isDashing = false;
+			_dashCooldownTime = _dashCooldown;
+			_currentDashTime = 0f;
 		}
 	}
 }

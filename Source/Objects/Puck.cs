@@ -1,4 +1,5 @@
 ﻿using SFML.System;
+using System.Numerics;
 
 namespace Source.Objects
 {
@@ -29,7 +30,7 @@ namespace Source.Objects
 			Velocity = newVelocity;
 		}
 
-		public void ChangeVelocityFromPosition(Vector2f targetPosition)
+		public void ChangeVelocityFromPosition(Vector2f targetPosition, float targetSpeed)
 		{
 			Vector2f direction = Position - targetPosition;
 
@@ -42,9 +43,8 @@ namespace Source.Objects
 
 			direction /= magnitude;
 
-			float speed = MathF.Sqrt(Velocity.X * Velocity.X + Velocity.Y * Velocity.Y);
-
-			Vector2f newVelocity = direction * speed;
+			float newSpeed = Speed * targetSpeed;
+			Vector2f newVelocity = direction * newSpeed;
 
 			ChangeVelocity(newVelocity);
 		}

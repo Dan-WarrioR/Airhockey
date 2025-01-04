@@ -88,6 +88,8 @@ namespace Source.Core
             CheckPuckWallCollisions();
 
             CheckPuckWithPlayerCollisions();
+
+            ValidatePuck();
 		}
 
         private void CheckPuckWallCollisions()
@@ -107,13 +109,21 @@ namespace Source.Core
         {
             if (_puck.IsIntersects(_rightPlayer))
             {
-                _puck.ChangeVelocityFromPosition(_rightPlayer.Position);
+                _puck.ChangeVelocityFromPosition(_rightPlayer.Position, _rightPlayer.SpeedMultiplier);
 			}
 			else if (_puck.IsIntersects(_leftPlayer))
 			{
-				_puck.ChangeVelocityFromPosition(_leftPlayer.Position);
+				_puck.ChangeVelocityFromPosition(_leftPlayer.Position, _leftPlayer.SpeedMultiplier);
 			}
 		}
+
+        private void ValidatePuck()
+        {
+            if (_puck.Position.X <= 0 || _puck.Position.X >= _window.Size.X || _puck.Position.Y <= 0 || _puck.Position.Y >= _window.Size.Y)
+            {
+                _puck.Reset();
+            }
+        }
 
         private void UpdateScore(GoalSide goalSide)
         {
