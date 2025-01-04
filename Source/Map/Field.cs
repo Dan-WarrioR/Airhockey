@@ -72,7 +72,7 @@ namespace Source.Map
 			return false;
 		}
 
-		public bool IsIntersects(BorderType borderType, ShapeObject targetObject)
+		public bool IsIntersects(BorderType borderType, SphereObject targetObject)
 		{
 			if (!_borders.TryGetValue(borderType, out Shape? shape))
 			{
@@ -90,10 +90,10 @@ namespace Source.Map
 			}
 		}
 
-		private bool IsIntersects(Shape shape, ShapeObject otherObject)
+		private bool IsIntersects(Shape shape, SphereObject otherObject)
 		{
 			var shapeBounds = shape.GetGlobalBounds();
-
+			
 			return shapeBounds.Intersects(otherObject.ObjectRect);
 		}
 
