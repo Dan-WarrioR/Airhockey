@@ -65,7 +65,7 @@ namespace Source.Core
         {
             Draw();
 
-            while (!IsEndGame())
+            while (!IsGameActive())
             {
                 CalculateInput();
                 ProcessLogic();
@@ -136,7 +136,7 @@ namespace Source.Core
         
 
 
-        private bool IsEndGame()
+        private bool IsGameActive()
         {
             return !_window.IsOpen;
         }  

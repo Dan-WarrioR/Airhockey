@@ -24,7 +24,7 @@ namespace Source.Objects
 		WASD,
 	}
 
-	public class Player : SphereObject
+	public class Player : CircleObject
 	{
 		private const float _speed = 250f;
 

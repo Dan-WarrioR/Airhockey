@@ -4,7 +4,7 @@ using Source.Tools;
 
 namespace Source.Objects
 {
-	public class SphereObject : GameObject
+	public class CircleObject : GameObject
 	{
 		protected virtual Color FillColor => Color.White;
 
@@ -16,7 +16,7 @@ namespace Source.Objects
 
 		protected Shape Shape { get; }
 
-		public SphereObject(float radius, Vector2f initialPosition) : base(initialPosition)
+		public CircleObject(float radius, Vector2f initialPosition) : base(initialPosition)
 		{
 			Radius = radius;
 
@@ -33,7 +33,7 @@ namespace Source.Objects
 			Shape.Position = position;
 		}
 
-		public virtual bool IsIntersects(SphereObject sphere)
+		public virtual bool IsIntersects(CircleObject sphere)
 		{
 			float distanceToObject = Position.DistanceTo(sphere.Position);
 
