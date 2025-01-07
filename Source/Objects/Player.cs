@@ -136,7 +136,7 @@ namespace Source.Objects
 				return;
 			}
 
-			_dashAbility.TryApply();
+			_dashAbility.Apply();
 		}
 
 		private bool CanStartDash()
