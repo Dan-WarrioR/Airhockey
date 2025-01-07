@@ -4,7 +4,7 @@ namespace Source.Tools
 {
 	public static class Vector2fExtensions
 	{
-		public static float Distance(this Vector2f source, Vector2f second)
+		public static float DistanceTo(this Vector2f source, Vector2f second)
 		{
 			float deltaX = second.X - source.X;
 			float deltaY = second.Y - source.Y;

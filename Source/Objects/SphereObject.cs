@@ -35,7 +35,7 @@ namespace Source.Objects
 
 		public virtual bool IsIntersects(SphereObject sphere)
 		{
-			float distanceToObject = Position.Distance(sphere.Position);
+			float distanceToObject = Position.DistanceTo(sphere.Position);
 
 			return distanceToObject <= Radius + sphere.Radius;
 		}
